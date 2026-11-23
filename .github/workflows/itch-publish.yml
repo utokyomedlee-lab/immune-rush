@@ -1,0 +1,78 @@
+name: Publish IMMUNE RUSH to itch.io
+
+on:
+  workflow_dispatch:
+    inputs:
+      project_slug:
+        description: "Existing itch.io project slug (the final part of the project URL)"
+        required: true
+        default: "immune-rush"
+        type: string
+      version:
+        description: "Build version shown by butler"
+        required: true
+        default: "0.1.0"
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout GitHub source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Validate itch.io settings
+        env:
+          BUTLER_API_KEY: ${{ secrets.BUTLER_API_KEY }}
+          PROJECT_SLUG: ${{ inputs.project_slug }}
+          VERSION: ${{ inputs.version }}
+        run: |
+          if [ -z "$BUTLER_API_KEY" ]; then
+            echo "::error::Add the BUTLER_API_KEY secret in Settings > Secrets and variables > Actions."
+            exit 1
+          fi
+          if [ -z "$PROJECT_SLUG" ] || ! [[ "$PROJECT_SLUG" =~ ^[a-z0-9-]+$ ]]; then
+            echo "::error::Project slug must contain only lowercase letters, numbers, and hyphens."
+            exit 1
+          fi
+          if [ -z "$VERSION" ]; then
+            echo "::error::Version is required."
+            exit 1
+          fi
+
+      - name: Install Butler
+        shell: bash
+        run: |
+          mkdir -p "$RUNNER_TEMP/butler"
+          curl --fail --location --silent --show-error \
+            https://broth.itch.zone/butler/linux-amd64/LATEST/archive/default \
+            --output "$RUNNER_TEMP/butler.zip"
+          unzip -q "$RUNNER_TEMP/butler.zip" -d "$RUNNER_TEMP/butler"
+          BUTLER_BIN="$(find "$RUNNER_TEMP/butler" -type f -name butler -print -quit)"
+          if [ -z "$BUTLER_BIN" ]; then
+            echo "::error::Butler executable was not found in the downloaded archive."
+            exit 1
+          fi
+          chmod +x "$BUTLER_BIN"
+          echo "BUTLER_BIN=$BUTLER_BIN" >> "$GITHUB_ENV"
+          "$BUTLER_BIN" version
+
+      - name: Prepare HTML5 build
+        run: |
+          mkdir -p "$RUNNER_TEMP/itch-build"
+          cp index.html "$RUNNER_TEMP/itch-build/index.html"
+          test -s "$RUNNER_TEMP/itch-build/index.html"
+
+      - name: Push current GitHub build to itch.io
+        env:
+          BUTLER_API_KEY: ${{ secrets.BUTLER_API_KEY }}
+          PROJECT_SLUG: ${{ inputs.project_slug }}
+          VERSION: ${{ inputs.version }}
+        run: |
+          "$BUTLER_BIN" push \
+            "$RUNNER_TEMP/itch-build" \
+            "utokyomedlee-lab/$PROJECT_SLUG:html5" \
+            --userversion "$VERSION"
