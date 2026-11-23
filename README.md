@@ -68,3 +68,7 @@ GitHub Pages 안내: https://docs.github.com/en/pages
 
 - 공개 테스트 빌드: `0.1.0`
 - 게임 진입 파일: `index.html`
+
+## GitHub → itch.io 게시
+
+GitHub의 최신 게임을 itch.io에 업데이트하려면 [ITCHIO-PUBLISHING-KO.md](ITCHIO-PUBLISHING-KO.md)를 따라 `BUTLER_API_KEY` Secret을 등록하고 Actions에서 게시 워크플로를 실행하세요.
