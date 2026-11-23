@@ -6,7 +6,7 @@ on:
       project_slug:
         description: "Existing itch.io project slug (the final part of the project URL)"
         required: true
-        default: "immune-rush"
+        default: "immune-rushutm-sourcechatgptcom"
         type: string
       version:
         description: "Build version shown by butler"
