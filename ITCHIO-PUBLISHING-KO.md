@@ -17,7 +17,7 @@
 1. 저장소의 **Actions** 탭을 엽니다.
 2. **Publish IMMUNE RUSH to itch.io** 워크플로를 선택합니다.
 3. **Run workflow**를 누릅니다.
-4. Project slug에는 itch.io 게임 주소에서 도메인 뒤의 경로를 입력합니다. 예: `https://utokyomedlee-lab.itch.io/immune-rush`라면 `immune-rush`입니다.
+4. Project slug에는 itch.io 게임 주소에서 도메인 뒤의 경로를 입력합니다. 예: `https://utokyomedlee-lab.itch.io/immune-rush`라면 `immune-rushutm-sourcechatgptcom`입니다.
 5. Version은 `0.1.0`을 사용하고 실행합니다.
 
 이 작업은 GitHub 저장소의 최상위 `index.html`만 업로드합니다. 다른 저장소 문서나 워크플로 파일은 게임 빌드에 포함하지 않습니다.
